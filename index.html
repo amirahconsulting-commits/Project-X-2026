@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLOOMY ERP - Gestion Production</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f3f4f6; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .active-tab-btn { border-bottom: 3px solid #4f46e5; color: #4f46e5; }
+    </style>
+</head>
+<body class="pb-20">
+
+    <header class="bg-white border-b sticky top-0 z-50 p-4">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <i class="fas fa-cat"></i>
+                </div>
+                <h1 class="font-bold text-xl text-gray-800">FLOOMY <span class="text-indigo-600">Admin</span></h1>
+            </div>
+            <button onclick="exportData()" class="text-xs bg-gray-100 px-3 py-1 rounded text-gray-600">Exporter CSV</button>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4">
+
+        <section id="dashboard" class="tab-content active">
+            <h2 class="text-2xl font-bold mb-6">Tableau de bord</h2>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-gray-500 text-xs">Production Jour</p>
+                    <p class="text-xl font-bold text-indigo-600">3 500 <span class="text-xs font-normal">unités</span></p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-gray-500 text-xs">Livraisons en cours</p>
+                    <p class="text-xl font-bold text-orange-500">12</p>
+                </div>
+            </div>
+            <div class="bg-indigo-900 text-white p-6 rounded-3xl shadow-xl mb-6 overflow-hidden relative">
+                <div class="relative z-10">
+                    <h3 class="font-bold text-lg mb-1">Alerte Stock Ingrédients</h3>
+                    <p class="text-indigo-200 text-sm italic">Poulet (min 20%) : Stock bas (150kg restants)</p>
+                </div>
+                <i class="fas fa-exclamation-triangle absolute -right-4 -bottom-4 text-6xl text-indigo-800 opacity-50"></i>
+            </div>
+        </section>
+
+        <section id="production" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6">Formulation & Ingrédients</h2>
+            <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+                <h4 class="font-bold mb-3 border-b pb-2">Recette Standard (Pâtée Poulet)</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span>Poulet Frais</span><span class="font-bold">20%</span></div>
+                    <div class="flex justify-between"><span>Abats & Viandes</span><span class="font-bold">45%</span></div>
+                    <div class="flex justify-between"><span>Bouillon de cuisson</span><span class="font-bold">30%</span></div>
+                    <div class="flex justify-between"><span>Vitamines & Taurine</span><span class="font-bold">5%</span></div>
+                </div>
+                <button class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-xl text-sm font-bold">Lancer un lot de production</button>
+            </div>
+        </section>
+
+        <section id="clients" class="tab-content">
+            <h2 class="text-2xl font-bold mb-6">Fichier Clients & Livraisons</h2>
+            <div class="space-y-3" id="clientList">
+                <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gray-100 h-10 w-10 rounded-full flex items-center justify-center font-bold text-gray-400">JD</div>
+                        <div>
+                            <p class="font-bold text-sm text-gray-800">Distributeur Nord</p>
+                            <p class="text-xs text-gray-500">Dernière livraison : 22/04/2026</p>
+                        </div>
+                    </div>
+                    <span class="bg-green-100 text-green-700 text-[10px] px-2 py-1 rounded-full font-bold">LIVRÉ</span>
+                </div>
+            </div>
+            <button onclick="addClient()" class="w-full mt-6 border-2 border-dashed border-gray-300 p-4 rounded-2xl text-gray-400 font-bold italic">+ Ajouter un nouveau client</button>
+        </section>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-3 z-50">
+        <button onclick="showTab('dashboard')" class="flex flex-col items-center gap-1 tab-btn active-tab-btn" id="btn-dashboard">
+            <i class="fas fa-chart-pie"></i>
+            <span class="text-[10px] font-bold">Dashboard</span>
+        </button>
+        <button onclick="showTab('production')" class="flex flex-col items-center gap-1 tab-btn text-gray-400" id="btn-production">
+            <i class="fas fa-industry"></i>
+            <span class="text-[10px] font-bold">Production</span>
+        </button>
+        <button onclick="showTab('clients')" class="flex flex-col items-center gap-1 tab-btn text-gray-400" id="btn-clients">
+            <i class="fas fa-truck-fast"></i>
+            <span class="text-[10px] font-bold">Livraison</span>
+        </button>
+        <button onclick="showTab('settings')" class="flex flex-col items-center gap-1 tab-btn text-gray-400" id="btn-settings">
+            <i class="fas fa-cog"></i>
+            <span class="text-[10px] font-bold">Société</span>
+        </button>
+    </nav>
+
+    <script>
+        function showTab(tabId) {
+            // Masquer tout
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab-btn', 'text-indigo-600'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.add('text-gray-400'));
+
+            // Afficher le bon
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active-tab-btn', 'text-indigo-600');
+            document.getElementById('btn-' + tabId).classList.remove('text-gray-400');
+        }
+
+        function addClient() {
+            const name = prompt("Nom du client/distributeur :");
+            if (name) {
+                const list = document.getElementById('clientList');
+                const html = `
+                    <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-indigo-50 h-10 w-10 rounded-full flex items-center justify-center font-bold text-indigo-300">${name.substring(0,2).toUpperCase()}</div>
+                            <div>
+                                <p class="font-bold text-sm text-gray-800">${name}</p>
+                                <p class="text-xs text-gray-500">Nouvelle commande en attente</p>
+                            </div>
+                        </div>
+                        <span class="bg-orange-100 text-orange-700 text-[10px] px-2 py-1 rounded-full font-bold">À PRÉPARER</span>
+                    </div>
+                `;
+                list.insertAdjacentHTML('afterbegin', html);
+            }
+        }
+
+        function exportData() {
+            alert("Exportation des données de production (CSV) générée avec succès.");
+        }
+    </script>
+</body>
+</html>
